@@ -1,60 +1,33 @@
-//Наблюдатель — это поведенческий паттерн проектирования, который создаёт механизм подписки,
-//позволяющий одним объектам следить и реагировать на события, происходящие в других объектах.
-
-// Издатели те объекты, которые содержат важное или интересное для других состояние.
-//  Остальные объекты, которые хотят отслеживать изменения этого состояния, назовём Подписчиками.
-
-// Паттерн Наблюдатель предлагает хранить внутри объекта издателя список ссылок на объекты подписчиков, 
-// причём издатель не должен вести список подписки самостоятельно. Он предоставит методы, с помощью которых 
-// подписчики могли бы добавлять или убирать себя из списка.
-
-/**
- * Интерфейс издателя объявляет набор методов для управлениями подписчиками.
- */
-interface Subject {
-    // Присоединяет наблюдателя к издателю.
-    attach(observer: Observer): void;
-    // Отсоединяет наблюдателя от издателя.
-    detach(observer: Observer): void;
-    // Уведомляет всех наблюдателей о событии.
-    notify(): void;
+interface ISubject {
+  subscribe(observer: Observer): void;
+  unsubscribe(observer: Observer): void;
+  notify(): void;
 }
 
-class ConcreteSubject implements Subject {
-
-    public state: number;
-    private observers: Observer[] = [];
-
-    public attach(observer: Observer): void {
-        //...
-    }
-
-    public detach(observer: Observer): void {
-        //..
-    }
-    public notify(): void {
-        for (const observer of this.observers) {
-            observer.update(this);
-        }
-    }
-
+interface IObserver {
+  update(): void;
 }
 
-interface Observer {
-    update(subject: Subject): void;
+class Observer implements IObserver {
+  constructor(id: number) {}
+  update() {}
 }
 
-class ConcreteObserverA implements Observer {
-    public update(subject: Subject): void {
-       //..
-    }
+class Subject implements ISubject {
+  private observers: Observer[] = [];
+  subscribe(observer: Observer) {
+    this.observers.push(observer);
+  }
+  unsubscribe(observer: Observer) {
+    const index = this.observers.indexOf(observer);
+    this.observers.splice(index, 1);
+  }
+  notify() {
+    this.observers.forEach((elem) => elem.update());
+  }
 }
 
-class ConcreteObserverB implements Observer {
-    public update(subject: Subject): void {
-        //..
-    }
-}
-
-
-
+////////
+const obs = new Observer(1);
+const subj = new Subject();
+subj.subscribe(obs);
